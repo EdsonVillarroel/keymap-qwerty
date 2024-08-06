@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 #include <stdio.h>
+char wpm_str[10];
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3(
@@ -494,13 +495,14 @@ static void render_anim(void) {
 
 // Used to draw on to the oled screen
 bool oled_task_user(void) {
-    if (is_keyboard_master()) {
-        oled_render_layer_state();
+    if (!is_keyboard_master()) {
+
         oled_render_keylog();
     } else {
     render_anim();  // renders pixelart
     oled_set_cursor(0, 0);                            // sets cursor to (row, column) using charactar spacing (5 rows on 128x32 screen, anything more will overflow back to the top)
-    oled_write(oled_render_layer_state(), false);                       // writes wpm on top left corner of string
+    sprintf(wpm_str, "WPM:%03d", get_current_wpm());  // edit the string to change wwhat shows up, edit %03d to change how many digits show up
+    oled_write(wpm_str, false);                       // writes wpm on top left corner of string                       // writes wpm on top left corner of string
     }
     return false;
 }
